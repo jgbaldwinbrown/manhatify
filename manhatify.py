@@ -60,7 +60,8 @@ containing chromosomes, rank ordered by size, with their midpoints (in bp) for a
     data["chrlen"] = data[chrom_col].replace(chr_lens_dict)
     data["cumsum"] = data[chrom_col].replace(cumsum_dict)
     data["plotpos"] = data["Scaffold_number"] * offset + data["cumsum"] + data[bp_col]
-    data["Feature"] = feature
+    if feature:
+        data["Feature"] = feature
     chrom_mids = get_chrom_mids(data, offset)
     return(data, chrom_mids)
 
