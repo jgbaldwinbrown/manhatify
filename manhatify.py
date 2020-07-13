@@ -67,7 +67,7 @@ containing chromosomes, rank ordered by size, with their midpoints (in bp) for a
 def combine_data(datas):
     return(pd.concat(datas))
 
-def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value"):
+def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None):
     ggdat = {
         "data": combo,
         "outname": outname,
@@ -77,15 +77,24 @@ def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = 
         "scale": scale,
         "text_size": text_size,
         "xname": xname,
-        "yname": yname
+        "yname": yname,
+        "color_col" : color_col,
+        "facet_col" : facet_col
     }
     
-    command = """
+    preamble = """
     outname = jdata$outname
     mids = jdata$mids
     scale = jdata$scale
     pdf(outname, height=jdata$dims[2]*scale, width=jdata$dims[1]*scale)
-        aplot = ggplot(data = data, aes(plotpos, """ + val_col + """)) +
+    """
+    if color_col:
+        aes = "aes(plotpos, " + val_col + ", color = " + color_col + ")"
+    else:
+        aes = "aes(plotpos, " + val_col + ")"
+    
+    plot_command = """
+        aplot = ggplot(data = data, """ + aes + """) +
             geom_point() +
             xlab(jdata$xname) + 
             ylab(jdata$yname) + ## y label from qqman::qq
@@ -93,9 +102,15 @@ def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = 
             ggtitle(jdata$title) +
             theme_bw() +
             #scale_y_continuous(breaks=seq(from=min(data$""" + val_col + """), to=max(data$""" + val_col + """), length.out=3)) +
-            facet_grid(Feature~., scales="free_y") +
             scale_x_continuous(breaks = mids$mid, labels = mids$Scaffold_number) + ## add new x labels 
-            theme(text = element_text(size=jdata$text_size))
+            theme(text = element_text(size=jdata$text_size))"""
+    
+    if facet_col:
+            plot_command = plot_command + """ +
+facet_grid(""" + facet_col + """~., scales="free_y")"""
+    plot_command = plot_command + "\n"
+    
+    ending = """
         print(aplot)
     dev.off()
     
@@ -103,4 +118,5 @@ def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = 
     #   facet_wrap(.~NAME, ncol = 2) +
     #   guides(colour=FALSE) +  ## remove legend
     """
+    command = preamble + plot_command + ending
     pygg.ggplot(ggdat, command)
