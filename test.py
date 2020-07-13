@@ -17,6 +17,7 @@ def main():
     print(chrom_offsets)
     mh.plot_manhat(combo, "select_families_dens2.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, facet_col = "Feature")
     mh.plot_manhat(combo, "select_families_dens3.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, color_col = "Feature")
+    mh.plot_manhat(combo, "select_families_dens4.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, color_col = "Feature", log=True)
 
 if __name__ == "__main__":
     main()

@@ -67,7 +67,7 @@ containing chromosomes, rank ordered by size, with their midpoints (in bp) for a
 def combine_data(datas):
     return(pd.concat(datas))
 
-def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None):
+def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None, log = False):
     ggdat = {
         "data": combo,
         "outname": outname,
@@ -101,13 +101,15 @@ def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = 
             #scale_color_manual(values = c(gray(0.5), gray(0))) + ## instead of colors, go for gray
             ggtitle(jdata$title) +
             theme_bw() +
-            #scale_y_continuous(breaks=seq(from=min(data$""" + val_col + """), to=max(data$""" + val_col + """), length.out=3)) +
             scale_x_continuous(breaks = mids$mid, labels = mids$Scaffold_number) + ## add new x labels 
             theme(text = element_text(size=jdata$text_size))"""
     
     if facet_col:
-            plot_command = plot_command + """ +
+        plot_command = plot_command + """ +
 facet_grid(""" + facet_col + """~., scales="free_y")"""
+    if log:
+        plot_command = plot_command + """ +
+scale_y_log10()"""
     plot_command = plot_command + "\n"
     
     ending = """
