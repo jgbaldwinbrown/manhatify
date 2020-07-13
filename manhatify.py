@@ -25,9 +25,9 @@ def get_chrom_lens_from_bed(bedconn):
         chrlens[sl[0]] = int(sl[2])
     return(chrlens)
 
-def get_data_from_bed(bedconn):
+def get_data_from_bed(bedconn, data_col_name = "Value"):
     data = pd.read_csv(bedconn, sep="\t", header=None)
-    data.columns = ["Scaffold", "Start", "End", "Value"]
+    data.columns = ["Scaffold", "Start", "End", data_col_name]
     return(data)
 
 def manhatify(indata, chrlens, chrom_col = "chr", bp_col = "bp", val_col = "val", offset = 5e6, feature = "feature"):
@@ -67,27 +67,35 @@ containing chromosomes, rank ordered by size, with their midpoints (in bp) for a
 def combine_data(datas):
     return(pd.concat(datas))
 
-def plot_manhat(combo, outname, mids, val_col):
-    ggdat = {"data": combo, "outname": outname, "mids": mids}
+def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value"):
+    ggdat = {
+        "data": combo,
+        "outname": outname,
+        "mids": mids,
+        "title": title,
+        "dims": dims,
+        "scale": scale,
+        "text_size": text_size,
+        "xname": xname,
+        "yname": yname
+    }
     
     command = """
     outname = jdata$outname
     mids = jdata$mids
-    # labs = c("Gene", "Repeat_content")
-    # names(labs) = c("Genes", "Repeats")
-    scale = 2.5
-    pdf(outname, height=3*4*scale, width=20*scale)
+    scale = jdata$scale
+    pdf(outname, height=jdata$dims[2]*scale, width=jdata$dims[1]*scale)
         aplot = ggplot(data = data, aes(plotpos, """ + val_col + """)) +
             geom_point() +
-            xlab("Chromosome") + 
-            ylab("Features per basepair") + ## y label from qqman::qq
+            xlab(jdata$xname) + 
+            ylab(jdata$yname) + ## y label from qqman::qq
             #scale_color_manual(values = c(gray(0.5), gray(0))) + ## instead of colors, go for gray
-            ggtitle("Chromosome-wide feature density") +
+            ggtitle(jdata$title) +
             theme_bw() +
             #scale_y_continuous(breaks=seq(from=min(data$""" + val_col + """), to=max(data$""" + val_col + """), length.out=3)) +
             facet_grid(Feature~., scales="free_y") +
             scale_x_continuous(breaks = mids$mid, labels = mids$Scaffold_number) + ## add new x labels 
-            theme(text = element_text(size=32))
+            theme(text = element_text(size=jdata$text_size))
         print(aplot)
     dev.off()
     
