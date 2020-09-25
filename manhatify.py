@@ -9,13 +9,16 @@ import copy
 def get_mid(chromdata_single):
     return(st.mean([chromdata_single["plotpos"].min(), chromdata_single["plotpos"].max()]))
 
-def get_chrom_mids(chromdata, offset):
+def get_chrom_mids(chromdata, offset, chrom_col):
     chroms = chromdata["Scaffold_number"].unique()
     outframe = pd.DataFrame({"Scaffold_number": chroms})
     mids = []
+    chrnames = []
     for chrom in chroms:
         mids.append(get_mid(chromdata[chromdata["Scaffold_number"].eq(chrom)]))
+        chrnames.append(chromdata[chromdata["Scaffold_number"].eq(chrom)][chrom_col].iloc[0])
     outframe["mid"] = mids
+    outframe[chrom_col] = chrnames
     return(outframe)
 
 def get_chrom_lens_from_bed(bedconn):
@@ -62,13 +65,13 @@ containing chromosomes, rank ordered by size, with their midpoints (in bp) for a
     data["plotpos"] = data["Scaffold_number"] * offset + data["cumsum"] + data[bp_col]
     if feature:
         data["Feature"] = feature
-    chrom_mids = get_chrom_mids(data, offset)
+    chrom_mids = get_chrom_mids(data, offset, chrom_col)
     return(data, chrom_mids)
 
 def combine_data(datas):
     return(pd.concat(datas))
 
-def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None, log = False):
+def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None, log = False, named_xticks = False, chrom_col = False):
     ggdat = {
         "data": combo,
         "outname": outname,
@@ -82,6 +85,11 @@ def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = 
         "color_col" : color_col,
         "facet_col" : facet_col
     }
+    
+    if named_xticks and chrom_col:
+        axis_labels = chrom_col
+    else:
+        axis_labels = "Scaffold_number"
     
     preamble = """
     outname = jdata$outname
@@ -102,7 +110,7 @@ def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = 
             #scale_color_manual(values = c(gray(0.5), gray(0))) + ## instead of colors, go for gray
             ggtitle(jdata$title) +
             theme_bw() +
-            scale_x_continuous(breaks = mids$mid, labels = mids$Scaffold_number) + ## add new x labels 
+            scale_x_continuous(breaks = mids$mid, labels = mids$""" + axis_labels + """) + ## add new x labels 
             theme(text = element_text(size=jdata$text_size))"""
     
     if facet_col:
