@@ -21,6 +21,8 @@ def main():
     mh.plot_manhat(combo, "select_families_dens5.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, log=True)
     mh.plot_manhat(combo, "select_families_dens6.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, log=True, named_xticks = True, chrom_col = "Scaffold")
     mh.plot_manhat(combo, "select_families_dens7.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, log=True, named_xticks = True, chrom_col = "Scaffold", geom = "line")
+    mh.plot_manhat(combo, "select_families_dens8.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, log=False, named_xticks = True, chrom_col = "Scaffold", geom = "line", ylim = (3e4,1e5))
+    mh.plot_manhat(combo, "select_families_dens9.pdf", chrom_offsets, "Density", title="Feature densities", yname = "Features per 1Mb window", dims = (20, 6), scale = 1.5, log=True, named_xticks = True, chrom_col = "Scaffold", geom = "line", ylim = (3e4,1e5))
 
 if __name__ == "__main__":
     main()

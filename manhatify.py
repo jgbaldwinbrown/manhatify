@@ -71,7 +71,7 @@ containing chromosomes, rank ordered by size, with their midpoints (in bp) for a
 def combine_data(datas):
     return(pd.concat(datas))
 
-def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None, log = False, named_xticks = False, chrom_col = False, geom = "point"):
+def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None, log = False, named_xticks = False, chrom_col = False, geom = "point", ylim = None):
     ggdat = {
         "data": combo,
         "outname": outname,
@@ -119,8 +119,11 @@ facet_grid(""" + facet_col + """~., scales="free_y")"""
     if log:
         plot_command = plot_command + """ +
 scale_y_log10()"""
-    plot_command = plot_command + "\n"
+    if ylim:
+        plot_command = plot_command + """ +
+ylim(""" + str(ylim[0]) + """, """ + str(ylim[1]) + """)"""
     
+    plot_command = plot_command + "\n"
     ending = """
         print(aplot)
     dev.off()
