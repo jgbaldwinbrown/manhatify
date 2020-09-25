@@ -71,7 +71,7 @@ containing chromosomes, rank ordered by size, with their midpoints (in bp) for a
 def combine_data(datas):
     return(pd.concat(datas))
 
-def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None, log = False, named_xticks = False, chrom_col = False):
+def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = (20.0, 10.0), scale = 2, text_size = 32, xname = "Chromosome", yname = "Value", color_col = None, facet_col = None, log = False, named_xticks = False, chrom_col = False, geom = "point"):
     ggdat = {
         "data": combo,
         "outname": outname,
@@ -104,7 +104,7 @@ def plot_manhat(combo, outname, mids, val_col, title = "Manhattan plot", dims = 
     
     plot_command = """
         aplot = ggplot(data = data, """ + aes + """) +
-            geom_point() +
+            geom_""" + geom + """() +
             xlab(jdata$xname) + 
             ylab(jdata$yname) + ## y label from qqman::qq
             #scale_color_manual(values = c(gray(0.5), gray(0))) + ## instead of colors, go for gray
