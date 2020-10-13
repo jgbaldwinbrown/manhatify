@@ -33,7 +33,7 @@ def get_data_from_bed(bedconn, data_col_name = "Value"):
     data.columns = ["Scaffold", "Start", "End", data_col_name]
     return(data)
 
-def manhatify(indata, chrlens, chrom_col = "chr", bp_col = "bp", val_col = "val", offset = 5e6, feature = "feature"):
+def manhatify(indata, chrlens, chrom_col = "chr", bp_col = "bp", val_col = "val", offset = 5e6, feature = "feature", log=False):
     """Take in a data frame and a dictionary of chromosome lengths, then output a tuple with
     two items: an updated data frame with
 extra columns containing all of the necessary data for Manhattan plotting, and a data frame
